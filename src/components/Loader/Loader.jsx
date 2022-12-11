@@ -1,4 +1,5 @@
 import { Audio } from 'react-loader-spinner';
+import css from './Loader.module.css';
 
 <Audio
   height="80"
@@ -7,7 +8,7 @@ import { Audio } from 'react-loader-spinner';
   color="green"
   ariaLabel="loading"
   wrapperStyle
-  wrapperClass
+  wrapperClass={css.Loader}
 />;
 
 export default Audio;

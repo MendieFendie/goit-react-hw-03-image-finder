@@ -1,12 +1,16 @@
 import css from './Modal.module.css';
+import { createPortal } from 'react-dom';
 
-const Modal = () => {
-  return (
-    <div className={css.Overlay}>
+const modalRoot = document.querySelector('#modal-root');
+
+const Modal = ({ imgUrl, toggleModal }) => {
+  return createPortal(
+    <div onClick={toggleModal} className={css.Overlay}>
       <div className={css.Modal}>
-        <img src="" alt="" />
+        <img src={imgUrl} alt="" />
       </div>
-    </div>
+    </div>,
+    modalRoot
   );
 };
 

@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import css from './ImageGallery.module.css';
-const ImageGallery = ({ pictures, toggleModal }) => {
+const ImageGallery = ({ pictures, openModal }) => {
   return (
-    <ul onClick={toggleModal} className={css.ImageGallery}>
+    <ul onClick={openModal} className={css.ImageGallery}>
       {pictures.map(picture => (
         <ImageGalleryItem
           key={picture.id}
@@ -17,3 +18,8 @@ const ImageGallery = ({ pictures, toggleModal }) => {
 };
 
 export default ImageGallery;
+
+ImageGallery.propTypes = {
+  pictures: PropTypes.array.isRequired,
+  openModal: PropTypes.func.isRequired,
+};

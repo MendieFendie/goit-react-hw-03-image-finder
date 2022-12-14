@@ -8,7 +8,7 @@ import css from './Loader.module.css';
   color="green"
   ariaLabel="loading"
   wrapperStyle
-  wrapperClass={css.Loader}
+  wrapperClass
 />;
 
 export default Audio;

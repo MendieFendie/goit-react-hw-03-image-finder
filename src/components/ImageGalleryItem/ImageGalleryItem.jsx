@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import css from './ImageGalleryItem.module.css';
 
 const ImageGalleryItem = ({ imgSrc, alt, id }) => {
@@ -14,3 +15,9 @@ const ImageGalleryItem = ({ imgSrc, alt, id }) => {
 };
 
 export default ImageGalleryItem;
+
+ImageGalleryItem.propTypes = {
+  imgSrc: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
+};

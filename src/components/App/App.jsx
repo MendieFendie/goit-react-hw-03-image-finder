@@ -14,6 +14,7 @@ export class App extends React.Component {
     currentPage: 1,
     showModal: false,
     imgUrl: '',
+    error: null,
   };
 
   searchValue = e => {
@@ -30,15 +31,23 @@ export class App extends React.Component {
       fetch(
         `https://pixabay.com/api/?q=${searchValue}&page=${this.state.currentPage}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
       )
-        .then(res => res.json())
+        .then(res => {
+          if (res.ok) {
+            return res.json();
+          }
+          return Promise.reject(
+            new Error(`cant find pictures with ${searchValue} value.`)
+          );
+        })
+
         .then(pictures => this.setState({ pictures: pictures.hits }))
+        .catch(error => this.setState({ error: error }))
         .finally(() => this.setState({ loading: false }));
       this.setState({ currentPage: this.state.currentPage + 1 });
     }
   };
 
-  loadMore = e => {
-    e.preventDefault();
+  loadMore = () => {
     this.setState({ loading: true });
     const searchValue = this.state.searchValue;
     this.setState({ currentPage: this.state.currentPage + 1 });
@@ -61,22 +70,26 @@ export class App extends React.Component {
   openModal = e => {
     const pictures = this.state.pictures;
     const targetImg = e.target.dataset.id;
-    const targetElem = pictures.find(elem => elem.id === Number(targetImg));
-    const webUrl = targetElem.webformatURL;
-    this.setState({ imgUrl: webUrl });
-    this.toggleModal();
+    if (targetImg) {
+      const targetElem = pictures.find(elem => elem.id === Number(targetImg));
+      const webUrl = targetElem.webformatURL;
+      this.setState({ imgUrl: webUrl });
+
+      this.toggleModal();
+    }
   };
 
   render() {
-    const { pictures, loading, showModal } = this.state;
+    const { pictures, loading, showModal, error } = this.state;
 
     return (
       <div className={css.App}>
+        {error && <h1>{error.massage}</h1>}
         <Searchbar onSubmit={this.submitSearch} onChange={this.searchValue} />
         {pictures && (
-          <ImageGallery pictures={pictures} toggleModal={this.openModal} />
+          <ImageGallery pictures={pictures} openModal={this.openModal} />
         )}
-        {loading && <Audio />}
+        {loading && <Audio color="blue" justifyContent="center" />}
         {pictures.length > 0 && <Button onLoad={this.loadMore} />}
         {showModal && (
           <Modal toggleModal={this.toggleModal} imgUrl={this.state.imgUrl} />

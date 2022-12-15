@@ -89,7 +89,17 @@ export class App extends React.Component {
         {pictures && (
           <ImageGallery pictures={pictures} openModal={this.openModal} />
         )}
-        {loading && <Audio color="blue" justifyContent="center" />}
+        {loading && (
+          <Audio
+            height="80"
+            width="80"
+            radius="9"
+            color="blue"
+            ariaLabel="loading"
+            wrapperStyle={{ display: 'flex', justifyContent: 'center' }}
+            wrapperClass
+          />
+        )}
         {pictures.length > 0 && <Button onLoad={this.loadMore} />}
         {showModal && (
           <Modal toggleModal={this.toggleModal} imgUrl={this.state.imgUrl} />

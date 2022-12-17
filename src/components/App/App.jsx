@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import Searchbar from '../Searchbar/Searchbar';
 import ImageGallery from '../ImageGallery/ImageGallery';
 import Button from '../Button/Button';
@@ -11,60 +12,47 @@ export class App extends React.Component {
     pictures: [],
     searchValue: '',
     loading: false,
-    currentPage: 1,
+    currentPage: '',
     showModal: false,
     imgUrl: '',
     error: null,
   };
 
-  searchValue = e => {
-    this.setState({ searchValue: e.currentTarget.value.trim() });
-  };
-
-  submitSearch = e => {
-    e.preventDefault();
-    const searchValue = this.state.searchValue;
-    if (searchValue === '') {
-      alert('please enter search value');
-    } else {
-      this.setState({ loading: true });
-      fetch(
-        `https://pixabay.com/api/?q=${searchValue}&page=${this.state.currentPage}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-          return Promise.reject(
-            new Error(`cant find pictures with ${searchValue} value.`)
-          );
-        })
-
-        .then(pictures => this.setState({ pictures: pictures.hits }))
-        .catch(error => this.setState({ error: error }))
-        .finally(() => this.setState({ loading: false }));
-      this.setState({ currentPage: this.state.currentPage + 1 });
-    }
+  formSubmitHandler = data => {
+    this.setState({
+      searchValue: data.inputValue,
+      currentPage: 1,
+      pictures: [],
+    });
   };
 
   loadMore = () => {
-    this.setState({ loading: true });
-    const searchValue = this.state.searchValue;
-    this.setState({ currentPage: this.state.currentPage + 1 });
-
-    fetch(
-      `https://pixabay.com/api/?q=${searchValue}&page=${this.state.currentPage}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-    )
-      .then(res => res.json())
-      .then(picture =>
-        this.setState(prevState => ({
-          pictures: [...prevState.pictures, ...picture.hits],
-        }))
-      )
-      .finally(() => this.setState({ loading: false }));
+    this.setState({ currentPage: Number(this.state.currentPage) + 1 });
   };
-  toggleModal = () => {
-    this.setState({ showModal: !this.state.showModal });
+
+  async componentDidUpdate(prevProps, prevState) {
+    const currentPage = this.state.currentPage;
+    const searchValue = this.state.searchValue;
+
+    if (
+      prevState.searchValue !== this.state.searchValue ||
+      prevState.currentPage !== this.state.currentPage
+    ) {
+      this.setState({ loading: true });
+      const responce = await axios.get(
+        `https://pixabay.com/api/?q=${searchValue}&page=${currentPage}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
+      );
+      this.setState({
+        pictures: [...this.state.pictures, ...responce.data.hits],
+      });
+      this.setState({ loading: false });
+    }
+  }
+
+  closeModal = e => {
+    if (e.target.className === 'Modal_Overlay__yoxbg') {
+      this.setState({ showModal: !this.state.showModal });
+    }
   };
 
   openModal = e => {
@@ -75,7 +63,7 @@ export class App extends React.Component {
       const webUrl = targetElem.webformatURL;
       this.setState({ imgUrl: webUrl });
 
-      this.toggleModal();
+      this.setState({ showModal: !this.state.showModal });
     }
   };
 
@@ -85,8 +73,8 @@ export class App extends React.Component {
     return (
       <div className={css.App}>
         {error && <h1>{error.massage}</h1>}
-        <Searchbar onSubmit={this.submitSearch} onChange={this.searchValue} />
-        {pictures && (
+        <Searchbar onSubmit={this.formSubmitHandler} />
+        {pictures.length !== 0 && (
           <ImageGallery pictures={pictures} openModal={this.openModal} />
         )}
         {loading && (
@@ -102,7 +90,7 @@ export class App extends React.Component {
         )}
         {pictures.length > 0 && <Button onLoad={this.loadMore} />}
         {showModal && (
-          <Modal toggleModal={this.toggleModal} imgUrl={this.state.imgUrl} />
+          <Modal closeModal={this.closeModal} imgUrl={this.state.imgUrl} />
         )}
       </div>
     );

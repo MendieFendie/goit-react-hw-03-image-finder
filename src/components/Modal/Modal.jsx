@@ -21,7 +21,7 @@ export default class Modal extends React.Component {
   };
   render() {
     return createPortal(
-      <div onClick={this.props.toggleModal} className={css.Overlay}>
+      <div onClick={this.props.closeModal} className={css.Overlay}>
         <div className={css.Modal}>
           <img src={this.props.imgUrl} alt="" />
         </div>

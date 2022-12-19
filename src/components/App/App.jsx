@@ -19,11 +19,13 @@ export class App extends React.Component {
   };
 
   formSubmitHandler = data => {
-    this.setState({
-      searchValue: data.inputValue,
-      currentPage: 1,
-      pictures: [],
-    });
+    if (this.state.searchValue !== data.inputValue) {
+      this.setState({
+        searchValue: data.inputValue,
+        currentPage: 1,
+        pictures: [],
+      });
+    }
   };
 
   loadMore = () => {
@@ -50,7 +52,8 @@ export class App extends React.Component {
   }
 
   closeModal = e => {
-    if (e.target.className === 'Modal_Overlay__yoxbg') {
+    if (e.target.className === 'Modal_Overlay__yoxbg' || e.code === 'Escape') {
+      e.preventDefault();
       this.setState({ showModal: !this.state.showModal });
     }
   };

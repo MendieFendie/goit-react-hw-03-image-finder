@@ -6,19 +6,13 @@ const modalRoot = document.querySelector('#modal-root');
 
 export default class Modal extends React.Component {
   componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('keydown', this.props.closeModal);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener('keydown', this.props.closeModal);
   }
 
-  handleKeyDown = e => {
-    if (e.code === 'Escape') {
-      e.preventDefault();
-      this.props.toggleModal();
-    }
-  };
   render() {
     return createPortal(
       <div onClick={this.props.closeModal} className={css.Overlay}>
